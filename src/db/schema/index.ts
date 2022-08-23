@@ -1,14 +1,14 @@
-import { Schema, SchemaDefinition, Entity } from "redis-om";
+import { Schema, Entity } from "redis-om";
 import AdminSchema from "./admin.schema";
-// import ApartmentSchema from "./apartment.schema.js";
-// import CashSchema from "./cash.schema.js";
-// import KinSchema from "./kin.schema.js";
-// import RentSchema from "./rent.schema.js";
-// import TenantSchema from "./tenant.schema.js";
+import ApartmentSchema from "./apartment.schema";
+import CashSchema from "./cash.schema";
+import KinSchema from "./kin.schema";
+import RentSchema from "./rent.schema";
+import TenantSchema from "./tenant.schema";
 
 export const adminSchema: Schema<Entity> = AdminSchema;
-// export const apartmentSchema = ApartmentSchema;
-// export const cashSchema = CashSchema;
-// export const kinSchema = KinSchema;
-// export const rentSchema = RentSchema;
-// export const tenantSchema = TenantSchema;
+export const apartmentSchema: Schema<Entity> = ApartmentSchema;
+export const cashSchema: Schema<Entity> = CashSchema;
+export const kinSchema: Schema<Entity> = KinSchema;
+export const rentSchema: Schema<Entity> = RentSchema;
+export const tenantSchema: Schema<Entity> = TenantSchema;

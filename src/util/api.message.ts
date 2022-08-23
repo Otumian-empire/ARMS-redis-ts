@@ -33,3 +33,4 @@ export const FORBIDDEN = "Forbidden";
 export const UNAUTHORIZED = "Unauthorized";
 export const REQUEST_TOKEN = "Kindly request for a new token by logging in";
 export const LOGIN_IN = "Provide unique credentials for signup or login";
+export const APARTMENT_ALREADY_EXIST = "Apartment already exist";
