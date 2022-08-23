@@ -1,0 +1,6 @@
+{
+  "ignore": [".gitignore", "./node_modules", "./dist", "./build", "log"],
+  "watch": ["./src"],
+  "exec": "npm start",
+  "ext": "ts"
+}
