@@ -9,6 +9,7 @@ import {
   INVALID_CREDENTIALS,
   KIN_IS_REQUIRED,
   LOGIN_SUCCESSFUL,
+  LOGIN_IN,
   NOT_FOUND,
   TENANT_CREATED_SUCCESSFULLY,
   UPDATE_SUCCESSFUL
@@ -77,8 +78,31 @@ export default class TenantController {
     }
   }
 
+  static async hasDuplicate(data: any) {
+    await Tenant.dropIndex();
+    await Tenant.createIndex();
+
+    const { email, username } = data;
+    const result: any = await Tenant.search()
+      .where("username")
+      .equals(username)
+      .or("email")
+      .equals(email)
+      .return.first();
+
+    return result;
+  }
+
   static async create(req, res) {
     try {
+      if (await TenantController.hasDuplicate(req.body)) {
+        {
+          return res.json({
+            success: false,
+            message: LOGIN_IN
+          });
+        }
+      }
       let {
         fullName,
         username,
@@ -86,16 +110,8 @@ export default class TenantController {
         email,
         phone,
         dob,
-        prevResidenceAddress,
-        kin
+        prevResidenceAddress
       } = req.body;
-
-      if (!kin.fullName || !kin.email || !kin.phone || !kin.residenceAddress) {
-        return res.json({
-          success: false,
-          message: KIN_IS_REQUIRED
-        });
-      }
 
       const hashedPassword = await hash(password, rounds);
 
@@ -106,8 +122,7 @@ export default class TenantController {
         email,
         phone,
         dob,
-        prevResidenceAddress,
-        kin
+        prevResidenceAddress
       });
 
       const id = await Tenant.save(tenant);
@@ -183,7 +198,7 @@ export default class TenantController {
 
   static async update(req, res) {
     try {
-      const { email, phone, kin } = req.body;
+      const { email, phone } = req.body;
       const id = req.params.id;
 
       const tenant: any = await Tenant.fetch(id);
@@ -201,16 +216,6 @@ export default class TenantController {
 
       if (phone) {
         tenant.phone = phone;
-      }
-
-      if (kin) {
-        if (kin.email) {
-          tenant.kin.email = kin.email;
-        }
-
-        if (kin.phone) {
-          tenant.kin.phone = kin.phone;
-        }
       }
 
       const updatedId = await Tenant.save(tenant);
@@ -241,19 +246,12 @@ export default class TenantController {
     try {
       const id = req.params.id;
 
-      const result: any = await Tenant.remove(id);
-
-      if (result) {
-        return res.json({
-          success: false,
-          message: INVALID_CREDENTIALS
-        });
-      }
+      await Tenant.remove(id);
 
       return res.json({
         success: true,
         message: DELETED_SUCCESSFULLY,
-        id: result
+        id: id
       });
     } catch (error) {
       logger.error(error.message);

@@ -214,15 +214,7 @@ export default class ApartmentController {
     try {
       const id = req.params.id;
 
-      const result: any = await Apartment.remove(id);
-
-      // it returns null on delete
-      if (result) {
-        return res.json({
-          success: false,
-          message: NOT_FOUND
-        });
-      }
+      await Apartment.remove(id);
 
       // delete the cache when the apartment is deleted
       const redisKey = `APARTMENT:${id}`;

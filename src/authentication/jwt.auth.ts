@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 
-import { FORBIDDEN, REQUEST_TOKEN } from "../util/api.message";
+import { FORBIDDEN, REQUEST_TOKEN, UNAUTHORIZED } from "../util/api.message";
 import { JWT_SECRET } from "../util/app.constant";
 import { getJwtIat, getTokenFromHeader } from "../util/function";
+import logger from "../config/logger";
 
 export default class Auth {
   static async generateJWT(payload = {}) {
@@ -27,18 +28,28 @@ export default class Auth {
   }
 
   static async hasExpiredToken(req, res, next) {
-    const jwt = req.token;
-    req.token = undefined;
+    try {
+      const jwt = req.token;
+      req.token = undefined;
 
-    const payload = await Auth.verifyJWT(jwt);
+      const payload = await Auth.verifyJWT(jwt);
 
-    if (payload.hasExpired) {
-      return res.json({ success: false, message: REQUEST_TOKEN });
+      if (payload.hasExpired) {
+        return res.json({ success: false, message: REQUEST_TOKEN });
+      }
+
+      req.payload = payload;
+
+      return next();
+    } catch (error) {
+      logger.error(error.message);
+      console.log(error);
+
+      return res.status(401).json({
+        success: false,
+        message: UNAUTHORIZED
+      });
     }
-
-    req.payload = payload;
-
-    return next();
   }
 
   static async hasExpired(ait) {

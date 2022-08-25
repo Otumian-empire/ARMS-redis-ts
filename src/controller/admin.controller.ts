@@ -210,15 +210,7 @@ export default class AdminController {
     try {
       const id = req.params.id;
 
-      const result: any = await Admin.remove(id);
-
-      // it returns null on delete
-      if (result) {
-        return res.json({
-          success: false,
-          message: NOT_FOUND
-        });
-      }
+      await Admin.remove(id);
 
       // delete the cache when the admin is deleted
       const redisKey = `ADMIN:${id}`;

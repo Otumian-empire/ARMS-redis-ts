@@ -10,7 +10,19 @@ interface TenantEntity {
   prevResidenceAddress: string;
 }
 
-class TenantEntity extends Entity {}
+class TenantEntity extends Entity {
+  toJSON() {
+    return {
+      fullName: this.fullName,
+      username: this.username,
+      email: this.email,
+      phone: this.phone,
+      dob: this.dob,
+      prevResidenceAddress: this.prevResidenceAddress,
+      entityId: this.entityId
+    };
+  }
+}
 
 const TenantSchemaStructure: SchemaDefinition = {
   fullName: {

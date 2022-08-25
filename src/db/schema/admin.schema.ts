@@ -6,7 +6,15 @@ interface AdminEntity {
   email: string;
 }
 
-class AdminEntity extends Entity {}
+class AdminEntity extends Entity {
+  toJSON() {
+    return {
+      username: this.username,
+      email: this.email,
+      entityId: this.entityId
+    };
+  }
+}
 
 const AdminSchemaStructure: SchemaDefinition = {
   username: {

@@ -22,7 +22,7 @@ export default class RentController {
 
       const rents = await Rent.search().return.page(skip, limit);
 
-      const redisKey = `CASH:${page}:${pageSize}`;
+      const redisKey = `RENT:${page}:${pageSize}`;
       await client.execute([
         "SETEX",
         redisKey,
@@ -44,9 +44,17 @@ export default class RentController {
   static async findOneByRentId(req, res) {
     try {
       const id = req.params.id;
-      const rent = await Rent.fetch(id);
 
-      const redisKey = `RentEntity:${id}`;
+      const rent: any = await Rent.fetch(id);
+
+      if (!rent || !rent.tenantId || !rent.cashId || !rent.apartmentId) {
+        return res.json({
+          success: false,
+          message: NOT_FOUND
+        });
+      }
+
+      const redisKey = `RENT:${id}`;
       await client.execute([
         "SETEX",
         redisKey,
@@ -70,7 +78,7 @@ export default class RentController {
       const id = req.params.id;
       const { apartmentId, cashId } = req.body;
 
-      if (!id || !apartmentId || !cashId) {
+      if (!id || !cashId || !apartmentId) {
         return res.json({
           success: false,
           message: INVALID_CREDENTIALS
@@ -86,24 +94,18 @@ export default class RentController {
         });
       }
 
-      await Cash.dropIndex();
-      await Cash.createIndex();
+      const cash: any = await Cash.fetch(cashId);
 
-      const cash: any = await Cash.search()
-        .where("tenantId")
-        .equals(id)
-        .return.first();
-
-      if (!cash || cash.entityId !== cashId) {
+      if (!cash || cash.tenantId !== id) {
         return res.json({
           success: false,
           message: NOT_FOUND
         });
       }
 
-      const apartment = await Apartment.fetch(apartmentId);
+      const apartment: any = await Apartment.fetch(apartmentId);
 
-      if (apartment) {
+      if (!apartment || !apartment.roomNumber) {
         return res.json({
           success: false,
           message: INVALID_CREDENTIALS
@@ -113,12 +115,18 @@ export default class RentController {
       await Rent.dropIndex();
       await Rent.createIndex();
 
-      const isOccupied: any = await Rent.search()
-        .where("apartmentId")
+      // we could use the tenantId, apartment and cashId to search for the rented apartment
+      // the idea is that a tenant can not use the same cash Id twice
+      // so we can just use the cashId instead
+      const isInvalidRental: any = await Rent.search()
+        .where("cashId")
+        .equals(cashId)
+        .or("apartmentId")
         .equals(apartmentId)
         .return.first();
 
-      if (isOccupied.tenantId) {
+      // this may mean that the cashed Id has been used or the apartment is occupied
+      if (isInvalidRental) {
         return res.json({
           success: false,
           message: APARTMENT_IS_OCCUPIED
@@ -131,7 +139,8 @@ export default class RentController {
       const rent = await Rent.createEntity({
         tenantId: id,
         apartmentId,
-        cashId
+        cashId,
+        rentedAt: Date.now()
       });
 
       const rentId = await Rent.save(rent);
@@ -162,14 +171,7 @@ export default class RentController {
     try {
       const id = req.params.id;
 
-      const result: any = await Rent.remove(id);
-
-      if (result) {
-        return res.json({
-          success: false,
-          message: NOT_FOUND
-        });
-      }
+      await Rent.remove(id);
 
       return res.json({
         success: true,

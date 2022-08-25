@@ -80,6 +80,13 @@ export default class CashController {
       const id = req.params.id;
       const amount = Number(req.body.amount) || 0;
 
+      if (!id || !amount) {
+        return res.json({
+          success: false,
+          message: AN_ERROR_OCCURRED
+        });
+      }
+
       const tenant: any = await Tenant.fetch(id);
 
       if (!tenant || !tenant.username || !tenant.email) {
@@ -89,19 +96,13 @@ export default class CashController {
         });
       }
 
-      if (!id || !amount) {
-        return res.json({
-          success: false,
-          message: AN_ERROR_OCCURRED
-        });
-      }
-
       const token = generateToken();
 
       const cash = await Cash.createEntity({
-        tenantId: tenant.id,
+        tenantId: tenant.entityId,
         token,
-        amount
+        amount,
+        paidAt: Date.now()
       });
 
       const cashId = await Cash.save(cash);
@@ -132,15 +133,7 @@ export default class CashController {
     try {
       const id = req.params.id;
 
-      const result: any = await Cash.remove(id);
-
-      // it returns null on delete
-      if (result) {
-        return res.json({
-          success: false,
-          message: NOT_FOUND
-        });
-      }
+      await Cash.remove(id);
 
       return res.json({
         success: true,
