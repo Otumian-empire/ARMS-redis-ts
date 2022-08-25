@@ -220,6 +220,12 @@ export default class AdminController {
         });
       }
 
+      // delete the cache when the admin is deleted
+      const redisKey = `ADMIN:${id}`;
+      if (await client.execute(["GET", redisKey])) {
+        await client.execute(["DEL", redisKey]);
+      }
+
       return res.json({
         success: true,
         message: DELETED_SUCCESSFULLY,
