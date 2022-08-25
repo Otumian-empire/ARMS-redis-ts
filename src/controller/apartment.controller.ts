@@ -224,6 +224,12 @@ export default class ApartmentController {
         });
       }
 
+      // delete the cache when the apartment is deleted
+      const redisKey = `APARTMENT:${id}`;
+      if (await client.execute(["GET", redisKey])) {
+        await client.execute(["DEL", redisKey]);
+      }
+
       return res.json({
         success: true,
         message: DELETED_SUCCESSFULLY,
