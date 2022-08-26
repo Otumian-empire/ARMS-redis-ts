@@ -28,7 +28,9 @@ Data access is abstracted `redis-om`.
 - create a copy of the content of the [example env](.example.env) file into a file, `.env`.
 - set `REDIS_URI=redis://127.0.0.1:6379` to use the local
 - Install node packages, `npm i`
+- Build app, `npm run build`
 - Run node server, `npm run start`
+- You can use `ts-node` directly without having to build the app. Run `npm run dev`
 - Import [postman collection](ARMS_Redis.postman_collection.json) into postman and visit the end routes
 
 ## Deployment
