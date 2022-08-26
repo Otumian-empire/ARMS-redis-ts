@@ -1,4 +1,4 @@
-# [ARMS-redis-ts]
+# ARMS-redis-ts
 
 ARMS is a management system for renting apartments. There are the tenants and land-lord, who is the admin. The admin registers apartments on ARMS, a tenant who is interested in renting from this land-lord registers for an apartment. Each apartment has its own detail, describing the basic interior of the room - provided by the admin, the cost for a term - a term is three month. This is just an API and there is a [postman collection](ARMS_Redis.postman_collection.json) that can be used to CRUD the entities involved.
 
@@ -6,15 +6,11 @@ ARMS is a management system for renting apartments. There are the tenants and la
 
 ### How the data is stored:
 
-Refer to [this example](https://github.com/redis-developer/basic-analytics-dashboard-redis-bitmaps-nodejs#how-the-data-is-stored) for a more detailed example of what you need for this section.
+Data is store usig `JSON`. String are data stored as a string, numeric data as numeric and Date (javascript Date) as date. CASH are stored using the entity name and the id or pagination details such as `ENTITY:id` or `ENTITY:offset:limit`.
 
 ### How the data is accessed:
 
-Refer to [this example](https://github.com/redis-developer/basic-analytics-dashboard-redis-bitmaps-nodejs#how-the-data-is-accessed) for a more detailed example of what you need for this section.
-
-### Performance Benchmarks
-
-[If you migrated an existing app to use Redis, please put performance benchmarks here to show the performance improvements.]
+Data access is abstracted `redis-om`.
 
 ## How to run it locally?
 
