@@ -1,0 +1,14 @@
+{
+  "name": "ARMS-redis-ts",
+  "description": "This is an API for ARMS, a management system for renting apartments",
+  "repository": "https://github.com/Otumian-empire/ARMS-redis-ts",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": [
+    "node",
+    "express",
+    "ARMS",
+    "ts",
+    "redis",
+    "redis-stack"
+  ]
+}
