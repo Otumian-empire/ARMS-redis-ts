@@ -32,6 +32,7 @@ Data access is abstracted `redis-om`.
 - Run node server, `npm run start`
 - You can use `ts-node` directly without having to build the app. Run `npm run dev`
 - Import [postman collection](ARMS_Redis.postman_collection.json) into postman and visit the end routes
+- You can interact with the remote server on heroku, changing the local route to `https://arms-redis-ts.herokuapp.com/`
 
 ## Deployment
 
