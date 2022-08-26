@@ -27,6 +27,11 @@ app.use(httpLogger);
 app.use(cors());
 
 // Routes
+
+app.use((_req, res, next) => {
+	return res.status(200).send("Hello!! ☺️");
+});
+
 app.use("/admin", adminRoute);
 app.use("/apartment", apartmentRoute);
 app.use("/tenant", tenantRoute);
